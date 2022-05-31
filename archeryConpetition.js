@@ -1,47 +1,57 @@
-// [프로그래머스] 양궁대회
-
-
-const n = 10;
-const info = [0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 3];
-
+/**
+ * 양궁대회
+ * @see https://programmers.co.kr/learn/courses/30/lessons/92342
+ * @param {number} n
+ * @param {number[]} info
+ */
 function solution(n, info) {
-    const opponentMaxScore = info.reduce((score, num, index)=> num ? score + (10 - index) : score, 0);
-    const LENGTH = 11;
-    let scoreBoard = Array(LENGTH).fill(0);
-    let maxScoreDiff = 0;
+  const LENGTH = 11;
+  let maxDiffer = 0;
+  let result = null;
 
-    const dfs = (remaining, score, opponentScore, startIndex, board) => {
-        if(startIndex >= LENGTH ){
-            const diff = score - opponentScore;
-            if(maxScoreDiff <= diff){
-                maxScoreDiff = diff;
-                scoreBoard[startIndex - 1] += remaining;
-            }
-            return;
-        }
-
-        if(remaining === 0){
-            const diff = score - opponentScore;
-            if(maxScoreDiff <= diff){
-                maxScoreDiff = diff;
-                scoreBoard = board;
-            }
-            return;
-        }
-
-
-        for(let index = startIndex; index < LENGTH; index++){
-            const opponentShot  = info[index];
-            const currentRemaining = remaining - (opponentShot + 1);
-            if(currentRemaining < 0) continue;
-            const currentOpponentScore = opponentShot ? opponentScore - (10 - index) : opponentScore;
-            const newScoreBoard = board.slice();
-            newScoreBoard.splice(index, 1, opponentShot + 1);
-            dfs(currentRemaining, score + 10 - index, currentOpponentScore, index + 1, newScoreBoard);
-        }
+  const compareScoreBoard = (board) => {
+    if (!result) {
+      result = board;
+      return;
     }
-    dfs(n, 0, opponentMaxScore, 0, scoreBoard);
-    return maxScoreDiff > 0 ? scoreBoard : [-1];
-}
 
-console.log(solution(n, info));
+    for (let i = LENGTH - 1; i >= 0; i--) {
+      if (board[i] === result[i]) continue;
+      if (result[i] < board[i]) {
+        result = board;
+      }
+      return;
+    }
+  };
+
+  const shoot = (remain, scoreBoard, myScore, OpponentScore, index) => {
+    if (index === LENGTH - 1) {
+      scoreBoard[index] = remain;
+      if (maxDiffer < myScore - OpponentScore) {
+        maxDiffer = myScore - OpponentScore;
+        result = scoreBoard;
+      } else if (maxDiffer === myScore - OpponentScore) {
+        compareScoreBoard(scoreBoard);
+      }
+      return;
+    }
+
+    if (remain > info[index]) {
+      let newScoreBoard = scoreBoard.slice();
+      newScoreBoard.splice(index, 1, info[index] + 1);
+      shoot(
+        remain - info[index] - 1,
+        newScoreBoard,
+        myScore + 10 - index,
+        OpponentScore,
+        index + 1
+      );
+    }
+    OpponentScore =
+      info[index] > 0 ? OpponentScore + 10 - index : OpponentScore;
+    shoot(remain, scoreBoard, myScore, OpponentScore, index + 1);
+  };
+
+  shoot(n, Array(LENGTH).fill(0), 0, 0, 0);
+  return maxDiffer > 0 ? result : [-1];
+}
