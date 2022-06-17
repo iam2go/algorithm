@@ -24,13 +24,12 @@ var findCheapestPrice = function (n, flights, src, dst, k) {
     queue.sort((a, b) => a[0] - b[0]);
 
     const [cost, city, count] = queue.shift();
-    visited.add(city);
+    visited.set(city, count);
 
     if (city === dst) return cost;
     if (count < 0 || !graph[city]) continue;
-    console.log(graph[city]);
     for (let [nextCity, nextCost] of graph[city]) {
-      if (visited.has(nextCity)) continue;
+      if (visited.has(nextCity) && visited.get(nextCity) >= count - 1) continue;
       queue.push([cost + nextCost, nextCity, count - 1]);
     }
   }
