@@ -9,29 +9,15 @@
  * @return {number}
  */
 var findCheapestPrice = function (n, flights, src, dst, k) {
-  let graph = {};
-  let visited = new Set();
-
-  flights.forEach(([from, to, cost]) => {
-    const nodes = graph[from] || [];
-    nodes.push([to, cost]);
-    graph[from] = nodes;
-  });
-
-  const queue = [[0, src, k]];
-
-  while (queue.length) {
-    queue.sort((a, b) => a[0] - b[0]);
-
-    const [cost, city, count] = queue.shift();
-    visited.set(city, count);
-
-    if (city === dst) return cost;
-    if (count < 0 || !graph[city]) continue;
-    for (let [nextCity, nextCost] of graph[city]) {
-      if (visited.has(nextCity) && visited.get(nextCity) >= count - 1) continue;
-      queue.push([cost + nextCost, nextCity, count - 1]);
+  let MinCosts = Array(n)
+    .fill()
+    .map((_, i) => (i === src ? 0 : Infinity));
+  for (let i = 0; i < k + 1; i++) {
+    let _MinCosts = [...MinCosts];
+    for (let [from, to, price] of flights) {
+      _MinCosts[to] = Math.min(_MinCosts[to], MinCosts[from] + price);
     }
+    MinCosts = [..._MinCosts];
   }
-  return -1;
+  return MinCosts[dst] != Infinity ? MinCosts[dst] : -1;
 };
