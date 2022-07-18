@@ -1,0 +1,10 @@
+/**
+ * 461. Hamming Distance
+ * @see https://leetcode.com/problems/hamming-distance/
+ * @param {number} x
+ * @param {number} y
+ * @return {number}
+ */
+var hammingDistance = function (x, y) {
+  return (x ^ y).toString(2).replace(/0/g, "").length;
+};
