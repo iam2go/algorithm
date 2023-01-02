@@ -1,4 +1,6 @@
 /**
+ * 순위 검색
+ * @see https://school.programmers.co.kr/learn/courses/30/lessons/72412
  * @param {string[]} info
  * @param {string[]} query
  * @returns {number[]}
